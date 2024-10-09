@@ -175,11 +175,11 @@
 
         if (selectedOption) {
             if (selectedOption.value === '4') {
-                feedback3.innerHTML = '¡Correcto! Los múltiplos comunes entre 5 y 7 son \\( \\{35, 70\\} \\).';
+                feedback3.innerHTML = "¡Correcto! Los múltiplos comunes entre 5 y 7 son \\{35, 70\\}.";
                 feedback3.className = "feedback feedback-correct";
                 document.getElementById('step4').style.display = 'block';
             } else {
-                feedback3.innerHTML = "Incorrecto. Inténtalo nuevamente.";
+                feedback3.innerHTML = "Incorrecto. Los múltiplos comunes son \\{35, 70\\}.";
                 feedback3.className = "feedback feedback-incorrect";
             }
             renderMathInElement(feedback3);
