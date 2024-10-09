@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego: Cálculo del Mínimo Común Múltiplo (MCM)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body);"></script>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #eef7fa;
+            padding: 20px;
+        }
+        h2, h3 {
+            color: #0066cc;
+            font-family: 'Comic Sans MS', sans-serif;
+        }
+        .step {
+            margin-top: 30px;
+            background-color: #ffffff;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #00b300;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #009900;
+        }
+        input[type="number"] {
+            font-size: 24px;
+            width: 100px;
+            text-align: center;
+        }
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .feedback {
+            font-size: 20px;
+            color: #333;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .feedback-correct {
+            color: green;
+        }
+        .feedback-incorrect {
+            color: red;
+        }
+        .pista {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #ff6600;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Juego: Calcula el MCM de 5 y 7</h2>
+
+<!-- Paso 1: Selección de múltiplos de 5 -->
+<div class="step">
+    <h3>Paso 1: Selecciona todos los múltiplos de 5</h3>
+    <div class="checkbox-grid" id="multiples5">
+        <!-- Generamos los números del 1 al 100 para los múltiplos de 5 -->
+        <script>
+            for (let i = 1; i <= 100; i++) {
+                document.write('<label><input type="checkbox" name="multiple5" value="'+i+'"> ' + i + '</label>');
+            }
+        </script>
+    </div>
+    <button onclick="checkMultiples5()">Comprobar</button>
+    <div id="feedback1" class="feedback"></div>
+    <div id="pista1" class="pista"></div>
+</div>
+
+<!-- Paso 2: Selección de múltiplos de 7 -->
+<div class="step" style="display:none;" id="step2">
+    <h3>Paso 2: Selecciona todos los múltiplos de 7</h3>
+    <div class="checkbox-grid" id="multiples7">
+        <!-- Generamos los números del 1 al 100 para los múltiplos de 7 -->
+        <script>
+            for (let i = 1; i <= 100; i++) {
+                document.write('<label><input type="checkbox" name="multiple7" value="'+i+'"> ' + i + '</label>');
+            }
+        </script>
+    </div>
+    <button onclick="checkMultiples7()">Comprobar</button>
+    <div id="feedback2" class="feedback"></div>
+    <div id="pista2" class="pista"></div>
+</div>
+
+<!-- Paso 3: Estilo "¿Quién quiere ser millonario?" con conjuntos -->
+<div class="step" style="display:none;" id="step3">
+    <h3>Paso 3: ¿Cuál es el conjunto de múltiplos comunes entre 5 y 7?</h3>
+    <form id="quizOptions">
+        <label><input type="radio" name="commonMultiple" value="1"> Opción 1: {1, 5, 7, 35}</label><br>
+        <label><input type="radio" name="commonMultiple" value="2"> Opción 2: {5, 10, 15, 20, 25, 30, 35, 40, 45}</label><br>
+        <label><input type="radio" name="commonMultiple" value="3"> Opción 3: {7, 14, 21, 28, 35, 42}</label><br>
+        <label><input type="radio" name="commonMultiple" value="4"> Opción 4: {35, 70}</label><br>
+    </form>
+    <button onclick="checkQuiz()">Comprobar</button>
+    <div id="feedback3" class="feedback"></div>
+</div>
+
+<!-- Paso 4: Escribe el mínimo común múltiplo (MCM) -->
+<div class="step" style="display:none;" id="step4">
+    <h3>Paso 4: Escribe el mínimo común múltiplo (MCM)</h3>
+    <p>Escribe el MCM de 5 y 7:</p>
+    <input type="number" id="mcmValue" placeholder="MCM">
+    <button onclick="checkMCM()">Comprobar</button>
+    <div id="feedback4" class="feedback"></div>
+</div>
+
+<script>
+    const correctMultiples5 = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100];
+    const correctMultiples7 = [7, 14, 21, 28, 35, 42, 49, 56, 63, 70, 77, 84, 91, 98];
+
+    function checkMultiples5() {
+        const selected5 = document.querySelectorAll('input[name="multiple5"]:checked');
+        const selectedValues5 = Array.from(selected5).map(cb => parseInt(cb.value));
+        const allCorrect5 = correctMultiples5.every(m => selectedValues5.includes(m));
+        const feedback1 = document.getElementById('feedback1');
+        const pista1 = document.getElementById('pista1');
+
+        if (allCorrect5 && selectedValues5.length === correctMultiples5.length) {
+            feedback1.innerHTML = "¡Correcto! Los múltiplos de 5 son \\(5, 10, 15, 20, 25, 30, \\dots, 100\\).";
+            feedback1.className = "feedback feedback-correct";
+            document.getElementById('step2').style.display = 'block';
+        } else {
+            feedback1.innerHTML = "Incorrecto. Revisa los múltiplos de 5.";
+            feedback1.className = "feedback feedback-incorrect";
+            pista1.innerHTML = "Pista: Los múltiplos de 5 van aumentando de 5 en 5.";
+        }
+        renderMathInElement(feedback1);
+    }
+
+    function checkMultiples7() {
+        const selected7 = document.querySelectorAll('input[name="multiple7"]:checked');
+        const selectedValues7 = Array.from(selected7).map(cb => parseInt(cb.value));
+        const allCorrect7 = correctMultiples7.every(m => selectedValues7.includes(m));
+        const feedback2 = document.getElementById('feedback2');
+        const pista2 = document.getElementById('pista2');
+
+        if (allCorrect7 && selectedValues7.length === correctMultiples7.length) {
+            feedback2.innerHTML = "¡Correcto! Los múltiplos de 7 son \\(7, 14, 21, 28, 35, \\dots, 98\\).";
+            feedback2.className = "feedback feedback-correct";
+            document.getElementById('step3').style.display = 'block';
+        } else {
+            feedback2.innerHTML = "Incorrecto. Revisa los múltiplos de 7.";
+            feedback2.className = "feedback feedback-incorrect";
+            pista2.innerHTML = "Pista: Los múltiplos de 7 aumentan de 7 en 7.";
+        }
+        renderMathInElement(feedback2);
+    }
+
+    function checkQuiz() {
+        const selectedOption = document.querySelector('input[name="commonMultiple"]:checked');
+        const feedback3 = document.getElementById('feedback3');
+
+        if (selectedOption) {
+            if (selectedOption.value === '4') {
+                feedback3.innerHTML = '¡Correcto! Los múltiplos comunes entre 5 y 7 son \\( \\{35, 70\\} \\).';
+                feedback3.className = "feedback feedback-correct";
+                document.getElementById('step4').style.display = 'block';
+            } else {
+                feedback3.innerHTML = "Incorrecto. Inténtalo nuevamente.";
+                feedback3.className = "feedback feedback-incorrect";
+            }
+            renderMathInElement(feedback3);
+        } else {
+            feedback3.innerHTML = "Selecciona una opción.";
+            feedback3.className = "feedback feedback-incorrect";
+        }
+    }
+
+    function checkMCM() {
+        const mcmValue = document.getElementById('mcmValue').value;
+        const feedback4 = document.getElementById('feedback4');
+        if (mcmValue == 35) {
+            feedback4.innerHTML = "¡Correcto! El MCM de 5 y 7 es \\(35\\).";
+            feedback4.className = "feedback feedback-correct";
+        } else {
+            feedback4.innerHTML = "Incorrecto. Inténtalo de nuevo.";
+            feedback4.className = "feedback feedback-incorrect";
+        }
+        renderMathInElement(feedback4);
+    }
+</script>
+
+</body>
+</html>
